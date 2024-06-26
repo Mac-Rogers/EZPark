@@ -1,0 +1,90 @@
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="https://static.maptoolkit.net/css/maplibre-gl.css" />
+  <style>
+    body { width: 100%; height: 100%; padding: 0; margin: 0; font-family: Arial, sans-serif; }
+    #map { width: 100%; height: 100%; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mapbox-polyline/1.1.1/polyline.min.js"></script>
+  <script>
+    // Initialize MapLibreGL map
+    let map = new maplibregl.Map({
+      container: "map",
+      style: "https://static.maptoolkit.net/rapidapi/styles/terrain.json?rapidapi-key=874cbf755dmsh66dd30189108ce2p11d012jsnc9730b94cfae",
+      center: [121, 38.9],
+      zoom: 13,
+    });
+    map.on("load", () => {
+      // Get route from Routing API
+      let start = [121.1, 38.9],
+        end = [121.5, 38.9];
+      let url = new URL("https://maptoolkit.p.rapidapi.com/route");
+      url.searchParams.append("point", `${start[1]},${start[0]}`);
+      url.searchParams.append("point", `${end[1]},${end[0]}`);
+      url.searchParams.append("routeType", "car");
+      url.searchParams.append("rapidapi-key", "874cbf755dmsh66dd30189108ce2p11d012jsnc9730b94cfae");
+      fetch(url)
+        .then((r) => r.json())
+        .then((route) => {
+          let path = route.paths[0];
+          // Add route polyline to map
+          let coordinates = polyline.decode(path.points).map(c => c.reverse());
+          console.log(coordinates);
+          map.addLayer({
+            id: "route",
+            type: "line",
+            source: {
+              type: "geojson",
+              data: {
+                type: "Feature",
+                geometry: {
+                  type: "LineString",
+                  coordinates: coordinates,
+                },
+              },
+            },
+            layout: {
+              "line-join": "round",
+              "line-cap": "round",
+            },
+            paint: {
+              "line-color": "#2a3561",
+              "line-width": 5,
+            },
+          });
+          // Add instruction markers with popup to map
+          path.instructions.forEach((instruction) => {
+            let $img = document.createElement("img");
+            $img.src = "https://static.maptoolkit.net/sprites/maptoolkit/route-via.svg";
+            $img.width = 12;
+            $img.height = 12;
+            $img.style["cursor"] = "pointer";
+            new maplibregl.Marker({
+              element: $img,
+              anchor: "center",
+            })
+              .setLngLat(instruction.coordinate.reverse())
+              .addTo(map)
+              .setPopup(new maplibregl.Popup().setHTML(`<p>${instruction.text}</p>`));
+          });
+          // Add route end marker
+          let $img = document.createElement("img");
+          $img.src = "https://static.maptoolkit.net/sprites/maptoolkit/marker.svg";
+          $img.width = 29;
+          $img.height = 30;
+          let marker = new maplibregl.Marker({
+            element: $img,
+            anchor: "bottom",
+          })
+            .setLngLat(coordinates[coordinates.length - 1])
+            .addTo(map);
+        });
+    });
+  </script>
+</body>
+</html>
