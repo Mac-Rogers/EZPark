@@ -5,14 +5,12 @@ import "./App.css";
 import Menu from "./components/Menu";
 
 const App: React.FC = () => {
-  const user = {
-    name: "Mac Rogers",
-    email: "macrogers@email.com",
-    phone: "04123456789"
-  };
-
   return (
     <div className="App">
+      {/* <div className="SearchBar">
+        <div>SearchBar</div>
+        <div>SearchResults</div>
+      </div> */}
           <Menu />
           {/* <h1>EZPark</h1> */}
           {/* <EntryForm /> */}

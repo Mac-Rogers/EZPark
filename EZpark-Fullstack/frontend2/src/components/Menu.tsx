@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
+import "./SearchBar";
 // import "./Menu.css";
 import Logo from "../img/EZpark-logo-nobg.png";
 import { AiFillSetting } from "react-icons/ai";
 import axios from 'axios';
+import SearchBar from "./SearchBar";
 
 // const Menu: React.FC = () => {
 //     return (
@@ -24,14 +26,14 @@ import axios from 'axios';
 const Menu: React.FC = () => {
     return (
         <menu>
-            <div className="col-lg-3 col-md-3">
+            <div className="logo">
                 <ul> 
                     <li>
                         <a href="http://localhost:3000/"><img src={Logo} alt="EZpark Logo" /></a> 
                     </li>
                 </ul>
             </div>
-            <EntryForm /> 
+            <SearchBar /> 
             <ul id="mainMenu">
                 <li>
                     <Icon icon={<AiFillSetting />} className="settings" /> 
@@ -40,8 +42,6 @@ const Menu: React.FC = () => {
         </menu>
     );
 }
-
-
 
 interface IconProps {
     icon: React.ReactNode;

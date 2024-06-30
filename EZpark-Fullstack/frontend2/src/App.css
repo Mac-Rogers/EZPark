@@ -29,28 +29,32 @@ menu {
   height: 120px;
   background: white;
   display: flex;
+  justify-content: space-between;
   flex-direction: row;
   align-items: center;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.35);
-  border-radius: 10px 10px 10px 10px;
-  position: absolute;
-  top: 0;
-  left: 0;
+  box-shadow: 0px 0px 10px rgba(50, 49, 49, 0.35);
+  /* border-radius: 10px 10px 10px 10px; */
+  position: fixed;
+  top: -20px;
+  left: 0px;
   z-index: 10;
-  padding: 0 20px;
+  padding: 0 0px;
   box-sizing: border-box;
 }
 
 menu img {
-  width: 10em; 
-  margin: 0;
+  width: 6em; 
+  margin: -55px 0px -30px -55px;
+  position:static;
+  top: -20px;
 }
 
 menu ul {
-  padding-top: 20px;
+  padding-top: 10px;
   width: 100%;
   display: flex;
   flex-direction: center;
+  justify-content: center;
   align-items: center;
 }
 
@@ -63,7 +67,8 @@ menu ul li {
 }
 
 menu ul li.settings {
-  margin-left: 200px;
+  margin-left: 200px; 
+  /* auto */
 }
 
 menu ul li a {
@@ -98,7 +103,7 @@ menu ul li.active a {
   transition: all 0.3s;
 }
 
-.entry-form {
+/* .entry-form {
   width: 100%;
   max-width: 1000px;
   margin: 20px auto;
@@ -147,4 +152,13 @@ menu ul li.active a {
   border: 1px solid #ddd;
   border-radius: 4px;
   text-align: center;
+} */
+
+
+.SearchBar {
+  padding-top: 20vh;
+  width: 40%;
+  margin: auto;
+  display: flex;
+
 }
