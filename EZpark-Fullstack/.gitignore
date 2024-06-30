@@ -1,0 +1,38 @@
+# Ignore virtual environment directory
+env/
+
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+
+# Ignore specific image files
+adjusted_image.jpg
+black_and_white_image.jpg
+checkerboard.jpg
+
+# Ignore all JPEG images
+*.jpg
+
+# Ignore system files and temporary files
+*.log
+*.tmp
+*.bak
+*.swp
+
+# Ignore other common directories and files
+.DS_Store
+*.egg
+*.egg-info
+.eggs/
+*.manifest
+*.spec
+pip-log.txt
+*.pyo
+*.pyd
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Ignore IDE/editor specific files
+.vscode/
+.idea/

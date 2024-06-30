@@ -24,4 +24,5 @@ while True:
         print("Server closed")
         break
     time.sleep(3)
+s.close()
 droid.stopLocating()
