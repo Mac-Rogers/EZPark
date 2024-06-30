@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import "./SearchBar";
-// import "./Menu.css";
 import Logo from "../img/EZpark-logo-nobg.png";
 import { AiFillSetting } from "react-icons/ai";
 import axios from 'axios';

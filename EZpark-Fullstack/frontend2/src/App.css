@@ -136,54 +136,24 @@ input:focus {
   color: royalblue;
 }
 
-/* .entry-form {
+
+
+.footer {
+  background-color: white;
   width: 100%;
-  max-width: 1000px;
-  margin: 20px auto;
+  height: 110px;
+  position: fixed;
+  bottom: 0;
   display: flex;
   justify-content: center;
   align-items: center;
+  padding-right: 10px;
 }
 
-.entry-form input {
-  width: 70%;
-  padding: 10px;
-  margin-right: 100px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-
-}
-
-.entry-form button {
-  padding: 10px 20px;
-  font-size: 16px;
-  color: #fff;
-  background-color: #1b6b89;
+.find-park {
+  background-color: red;
   border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-
+  height: 40px;
+  width: 69%;
+  border-radius: 20px;
 }
-
-.entry-form button:hover {
-  background-color: #155d75;
-}
-
-.entry-form ul {
-  list-style: none;
-  padding: 0;
-  margin: 20px 0 0 0;
-  width: 100%;
-}
-
-.entry-form ul li {
-  background-color: #f9f9f9;
-  padding: 10px;
-  margin-bottom: 5px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  text-align: center;
-} */
-
