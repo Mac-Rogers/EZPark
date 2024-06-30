@@ -2,8 +2,8 @@ import cv2
 import numpy as np
 import os
 
-def apply_perspective_transform(image, scale=1.0):
-    height, width = image.shape[:2]
+def apply_perspective_transform(input_image, output_path, scale=1.0):
+    height, width = input_image.shape[:2]
 
     # Define the four points in the source image
     pts_src = np.array([[0, 0], [width - 1, 0], [width - 1, height - 1], [0, height - 1]], dtype=np.float32)
@@ -20,16 +20,18 @@ def apply_perspective_transform(image, scale=1.0):
     matrix = cv2.getPerspectiveTransform(pts_src, pts_dst)
 
     # Apply the perspective transformation
-    result = cv2.warpPerspective(image, matrix, (width, height))
+    result = cv2.warpPerspective(input_image, matrix, (width, height))
 
-    return result
+    # Save the resulting image
+    cv2.imwrite(output_path, result)
+    print(f"Transformed image saved to {output_path}")
 
 def apply_binary_threshold(image, threshold=230):
     # Apply binary thresholding
     _, black_and_white_image = cv2.threshold(image, threshold, 255, cv2.THRESH_BINARY)
     return black_and_white_image
 
-def process_images(input_folder, output_folder, scale=1.0, threshold=230):
+def process_images(input_folder, output_folder, scale, threshold=230):
     # Create the output folder if it doesn't exist
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
@@ -46,11 +48,8 @@ def process_images(input_folder, output_folder, scale=1.0, threshold=230):
                 print(f"Could not open or find the image {file_path}.")
                 continue
 
-            # Apply perspective transform
-            transformed_image = apply_perspective_transform(image, scale=scale)
-
             # Convert to grayscale before applying threshold
-            gray_image = cv2.cvtColor(transformed_image, cv2.COLOR_BGR2GRAY)
+            gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
             # Apply binary thresholding
             black_and_white_image = apply_binary_threshold(gray_image, threshold=threshold)
@@ -58,8 +57,9 @@ def process_images(input_folder, output_folder, scale=1.0, threshold=230):
             # Construct the output file path
             output_file_path = os.path.join(output_folder, filename)
 
-            # Save the processed image in the output folder
-            cv2.imwrite(output_file_path, black_and_white_image)
+            # Apply perspective transform
+            apply_perspective_transform(black_and_white_image, output_file_path, scale=scale)
+
             print(f"Processed and saved {output_file_path}")
 
 # Specify the input and output folders
@@ -67,4 +67,4 @@ input_folder = 'images'
 output_folder = 'processed_images'
 
 # Apply transformations to all images in the input folder and save them in the output folder
-process_images(input_folder, output_folder, scale=2.3, threshold=230)
+process_images(input_folder, output_folder, 2.7, threshold=200)

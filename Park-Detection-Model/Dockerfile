@@ -19,4 +19,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . /app/
 
 # Default command to run the Python script
-CMD ["python", "image_processing.py"]
+CMD ["python", "hello_world.py"]

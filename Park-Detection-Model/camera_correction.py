@@ -37,8 +37,8 @@ def apply_perspective_transform(image_path, output_path, scale=1.0):
 
 if __name__ == "__main__":
     # Adjust the scale factor to control the amount of perspective correction
-    scale_factor = 2.3
-    input_image_path = 'images/parking_space106.jpg'
-    output_image_path = 'images/transformed_parking_space.jpg'
+    scale_factor = 2.7
+    input_image_path = 'images/parking_space1220.jpg'
+    output_image_path = 'processed_images/parking_space836.jpg'
 
     apply_perspective_transform(input_image_path, output_image_path, scale=scale_factor)
