@@ -2,7 +2,8 @@
   display: flex;
   justify-content: space-between;
   height: 100vh;
-  padding: 20px;
+  display: flex;
+  /* padding: 20px; */
 }
 
 .Navbar {
@@ -21,4 +22,129 @@
 
 #map {
   height: 100%;
+}
+
+menu {
+  width: 100%;
+  height: 120px;
+  background: white;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.35);
+  border-radius: 10px 10px 10px 10px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+menu img {
+  width: 10em; 
+  margin: 0;
+}
+
+menu ul {
+  padding-top: 20px;
+  width: 100%;
+  display: flex;
+  flex-direction: center;
+  align-items: center;
+}
+
+menu ul li {
+  list-style: none;
+  margin: 20px 0;
+  position: relative;
+  width: 100%;
+  text-align: center;
+}
+
+menu ul li.settings {
+  margin-left: 200px;
+}
+
+menu ul li a {
+  font-size: 24px;
+  color: #1b6b89;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+menu ul li a:before {
+  position: absolute;
+  content: "";
+  top: 0;
+  left: -10;
+  width: 20px;
+  height: 20px;
+  /* background: #b3a8f8; */
+  border-radius: 50%;
+}
+
+menu ul li:hover a {
+  color: aquamarine;
+}
+
+menu ul li:hover a::before {
+  width: 20px;
+  transition: all 0.3s;
+}
+
+menu ul li.active a {
+  color: aquamarine;
+  transition: all 0.3s;
+}
+
+.entry-form {
+  width: 100%;
+  max-width: 1000px;
+  margin: 20px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.entry-form input {
+  width: 70%;
+  padding: 10px;
+  margin-right: 100px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+
+}
+
+.entry-form button {
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #1b6b89;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+}
+
+.entry-form button:hover {
+  background-color: #155d75;
+}
+
+.entry-form ul {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0 0 0;
+  width: 100%;
+}
+
+.entry-form ul li {
+  background-color: #f9f9f9;
+  padding: 10px;
+  margin-bottom: 5px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  text-align: center;
 }

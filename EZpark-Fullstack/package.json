@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "maplibre-gl": "^4.5.0"
+    "maplibre-gl": "^4.5.0",
+    "react-icons": "^5.2.1"
   }
 }
