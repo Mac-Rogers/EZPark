@@ -36,3 +36,8 @@ def read_items(db: Session = Depends(get_db)):
 @app.post("/items/")
 def create_item(item: ItemCreate, db: Session = Depends(get_db)):
     return crud.create_item(db, item.name)
+
+@app.get("/gps-coordinates")
+async def get_gps_coordinates():
+    # Your code to fetch and return GPS coordinates
+    return {"longitude": 121.2, "latitude": 38.9}
