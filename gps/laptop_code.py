@@ -15,12 +15,16 @@ s.listen(1)
 message, addr = s.accept()
 while True:
     location_raw = message.recv(2048).decode('ascii')
-    location = ast.literal_eval(location_raw)
-    fused_data = location.get('fused', {})
-    gps_data = location.get('gps', {})
-    network_data = location.get('network', {})
-    # Take fused data if available, otherwise gps and network data in that order
-    data = fused_data if fused_data else gps_data if gps_data else network_data
+    if not location_raw:
+        print("Client closed connection")
+        break
+    location = ast.literal_eval(location_raw)  # Get dictionary object
+    # Determine the mode with the highest accuracy and use that
+    accuracy_list = {}
+    for mode in location:
+        accuracy_list.update({mode: location.get(mode).get('accuracy')})
+    data_mode = min(accuracy_list, key=accuracy_list.get)
+    data = location.get(data_mode, {})
 
     # Make sure it isn't an empty position
     if data:
@@ -28,6 +32,6 @@ while True:
         longitude = data.get('longitude')
         accuracy = data.get('accuracy')
         provider = data.get('provider')
-        print(f"{provider} - Latitude: {latitude}, Longitude: {longitude}, Accuracy: {accuracy}")
+        print(f"{provider} - Latitude, Longitude: {latitude}, {longitude}, Accuracy: {accuracy}")
     else:
         print("No location data received")
