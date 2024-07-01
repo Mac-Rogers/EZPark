@@ -2,6 +2,7 @@
 EZPark/
 base/
 .idea/
+venv/
 
 # Created by https://www.toptal.com/developers/gitignore/api/macos,windows,pycharm,visualstudiocode,react
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,windows,pycharm,visualstudiocode,react
