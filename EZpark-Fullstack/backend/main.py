@@ -42,7 +42,7 @@ def create_item(item: ItemCreate, db: Session = Depends(get_db)):
 @app.get("/gps-coordinates")
 async def get_gps_coordinates():
     longitude, latitude = get_current_location()
-    return {"longitude": longitude, "latitude": latitude}
+    return {"longitude": latitude, "latitude": longitude} 
 
 # Finds network geolocation
 def get_public_ip():

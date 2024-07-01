@@ -10,6 +10,7 @@ const MapComponent: React.FC = () => {
       try {
         const response = await fetch('http://localhost:8000/gps-coordinates');
         const data = await response.json();
+        console.log([data.longitude, data.latitude])
         setCoordinates([data.longitude, data.latitude]);
       } catch (error) {
         console.error('Error fetching GPS coordinates:', error);
