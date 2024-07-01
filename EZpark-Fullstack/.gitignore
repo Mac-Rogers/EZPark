@@ -19,6 +19,7 @@ checkerboard.jpg
 *.tmp
 *.bak
 *.swp
+*.db
 
 # Ignore other common directories and files
 .DS_Store

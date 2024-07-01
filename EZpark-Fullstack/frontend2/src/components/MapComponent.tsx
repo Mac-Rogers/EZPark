@@ -4,14 +4,20 @@ import maplibregl from 'maplibre-gl';
 
 const MapComponent: React.FC = () => {
   const [coordinates, setCoordinates] = useState<[number, number] | null>(null);
+  const [markerCoordinates, setMarkerCoordinates] = useState<[number, number][]>([]);
+  const [map, setMap] = useState<maplibregl.Map | null>(null);
 
   useEffect(() => {
     const fetchCoordinates = async () => {
       try {
         const response = await fetch('http://localhost:8000/gps-coordinates');
         const data = await response.json();
-        console.log([data.longitude, data.latitude])
         setCoordinates([data.longitude, data.latitude]);
+        console.log([data.longitude, data.latitude])
+        const response2 = await fetch('http://localhost:8000/items');
+        const data2 = await response2.json();
+        const coords = data2.map((item: { latitude: number, longitude: number }) => [item.longitude, item.latitude]);
+        setMarkerCoordinates(coords);
       } catch (error) {
         console.error('Error fetching GPS coordinates:', error);
       }
@@ -21,13 +27,15 @@ const MapComponent: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (coordinates) {
-      const map = new maplibregl.Map({
+    if (coordinates && !map) {
+      const mapInstance = new maplibregl.Map({
         container: 'map',
         style: 'https://api.maptiler.com/maps/streets/style.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL',
         center: coordinates,
-        zoom: 13,
+        zoom: 12,
       });
+
+      setMap(mapInstance);
 
       const redMarker = document.createElement('div');
       redMarker.innerHTML = `
@@ -41,19 +49,19 @@ const MapComponent: React.FC = () => {
 
       new maplibregl.Marker({ element: redMarker })
         .setLngLat(coordinates)
-        .addTo(map);
-
-      new maplibregl.Marker()
-        .setLngLat([coordinates[0] + 0.01, coordinates[1] - 0.01])
-        .addTo(map);
-      new maplibregl.Marker()
-        .setLngLat([coordinates[0] - 0.01, coordinates[1] - 0.01])
-        .addTo(map);
-      new maplibregl.Marker()
-        .setLngLat([coordinates[0] + 0.01, coordinates[1] - 0.01])
-        .addTo(map);
+        .addTo(mapInstance);
     }
-  }, [coordinates]);
+  }, [coordinates, map]);
+
+  useEffect(() => {
+    if (map) {
+      markerCoordinates.forEach(coord => {
+        new maplibregl.Marker()
+          .setLngLat(coord)
+          .addTo(map);
+      });
+    }
+  }, [markerCoordinates, map]);
 
   return <div id="map" style={{ height: '100%', width: '100%' }}></div>;
 };
