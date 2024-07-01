@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from ultralytics import YOLO
 
 def apply_perspective_transform(input_image, scale=1.0):
     height, width = input_image.shape[:2]
@@ -29,6 +30,9 @@ def apply_binary_threshold(image, threshold=230):
     return black_and_white_image
 
 def process_webcam_feed(scale=1.0, threshold=230):
+    # Load the YOLOv8 model
+    model = YOLO("model-training_0/weights/best.pt")
+
     # Capture video from the webcam
     cap = cv2.VideoCapture(0)
 
@@ -53,9 +57,18 @@ def process_webcam_feed(scale=1.0, threshold=230):
         # Apply perspective transform
         transformed_image = apply_perspective_transform(black_and_white_image, scale=scale)
 
+        # Convert the transformed image back to BGR
+        transformed_image_bgr = cv2.cvtColor(transformed_image, cv2.COLOR_GRAY2BGR)
+
+        # Run YOLOv8 inference on the transformed image
+        results = model(transformed_image_bgr)
+
+        # Visualize the results on the transformed image
+        annotated_frame = results[0].plot()
+
         # Display the original and processed frames
         cv2.imshow('Original', frame)
-        cv2.imshow('Processed', transformed_image)
+        cv2.imshow('Processed', annotated_frame)
 
         # Break the loop on 'q' key press
         if cv2.waitKey(1) & 0xFF == ord('q'):
