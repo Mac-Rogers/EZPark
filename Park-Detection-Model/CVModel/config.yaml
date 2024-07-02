@@ -1,0 +1,9 @@
+path: /Users/amberchen/EZPark/Park-Detection-Model/EZpark Detection.v2i.yolov8-obb
+
+
+train: train/images
+val: valid/images
+test: test/images
+
+names: 
+  0: parking_space
