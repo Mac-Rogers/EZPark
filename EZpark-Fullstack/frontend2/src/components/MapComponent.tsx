@@ -14,9 +14,9 @@ const MapComponent: React.FC = () => {
         const data = await response.json();
         setCoordinates([data.longitude, data.latitude]);
         console.log([data.longitude, data.latitude])
-        const response2 = await fetch('http://localhost:8000/items');
-        const data2 = await response2.json();
-        const coords = data2.map((item: { latitude: number, longitude: number }) => [item.longitude, item.latitude]);
+        const db_response = await fetch('http://localhost:8000/items');
+        const db_coords = await db_response.json();
+        const coords = db_coords.map((item: { latitude: number, longitude: number }) => [item.longitude, item.latitude]);
         setMarkerCoordinates(coords);
       } catch (error) {
         console.error('Error fetching GPS coordinates:', error);
