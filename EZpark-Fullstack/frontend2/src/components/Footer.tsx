@@ -6,23 +6,46 @@ const Footer: React.FC = () => {
   const [markerCoordinates, setMarkerCoordinates] = useState<[number, number][]>([]);
 
   const handleClick = async () => {
-    console.log('Find Me A Park button clicked');
     try {
       const response = await fetch('http://localhost:8000/gps-coordinates');
       const data = await response.json();
       const currentCoordinates: [number, number] = [data.longitude, data.latitude];
       setCoordinates(currentCoordinates);
-      console.log('Current Coordinates:', currentCoordinates);
-
       const db_response = await fetch('http://localhost:8000/items');
       const db_coords = await db_response.json();
       const coords: [number, number][] = db_coords.map((item: { latitude: number, longitude: number }) => [item.longitude, item.latitude]);
+      console.log("closest", coords.length)
       setMarkerCoordinates(coords);
-      console.log('Database Coordinates:', coords);
-
-      // Calculate the closest coordinate
-      const closestCoordinate = findClosestCoordinate(currentCoordinates, coords);
-      console.log('Closest Coordinate:', closestCoordinate);
+      if (coords.length) {
+        const closestCoordinate = findClosestCoordinate(currentCoordinates, coords); // Calculate the closest coordinate
+        //send coords to backend
+        try {
+          const response = await fetch('http://localhost:8000/set-coordinates', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              end: closestCoordinate,
+            }),
+          });
+          console.log('Sending:', closestCoordinate);
+          const data = await response.json();
+          console.log('Response from server:', data);
+        } catch (error) {
+          console.error('Error sending coordinates:', error);
+        }
+      } else {
+        fetch('http://localhost:8000/set-coordinates', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            end: [0,0],
+          }),
+        });
+      }
     } catch (error) {
       console.error('Error fetching coordinates:', error);
     }
