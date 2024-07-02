@@ -32,7 +32,8 @@ app.add_middleware(
 lock = threading.Event()
 
 class ItemCreate(BaseModel):
-    name: str
+    latitude: float
+    longitude: float
 
 def get_db():
     db = models.SessionLocal()
@@ -41,18 +42,31 @@ def get_db():
     finally:
         db.close()
 
+@app.on_event("startup")
+def startup_event():
+    db = next(get_db())
+
+
 @app.get("/items/")
 def read_items(db: Session = Depends(get_db)):
     return crud.get_items(db)
 
 @app.post("/items/")
 def create_item(item: ItemCreate, db: Session = Depends(get_db)):
-    return crud.create_item(db, item.name)
+    print(f"Received data: {item}")  # Add logging
+    return crud.create_item(db, item.latitude, item.longitude)
 
 @app.get("/gps-coordinates")
 async def get_gps_coordinates():
     longitude, latitude = get_current_location()
     return {"longitude": latitude, "latitude": longitude}
+
+@app.post("/clear-db/")
+def clear_db(db: Session = Depends(get_db)):
+    # Delete all items in the database
+    db.query(models.Coordinate).delete()
+    db.commit()
+    return {"message": "All items have been deleted."}
 
 # Finds network geolocation
 def get_public_ip():
