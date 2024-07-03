@@ -129,7 +129,9 @@ def request_location(client: socket.socket):
         packet = client.recv(2048)
         location_raw = packet.decode('ascii')
         if not location_raw:
-            print("Client closed connection")
+            print("Phone disconnected")
+            lock.clear()
+            client.close()
             break
         data = parse_location(location_raw)
 
@@ -159,15 +161,16 @@ def start_server():
             s.bind((host, port))
             break
         except OSError:
-            print("Cannot connect to client. Consider using same network.")
+            print(f"Unable to start server at {host} on port {port}. Consider using same network as phone.")
             time.sleep(10)
-    print("Started server")
-    s.listen(1)
-    client, addr = s.accept()
-    print(f"Accepted client at IP address {addr[0]} and port {addr[1]}")
+    print(f"Started server at {host} on port {port}")
+    while True:
+        s.listen(1)
+        client, addr = s.accept()
+        print(f"Accepted client at IP address {addr[0]} and port {addr[1]}")
 
-    request_location_thread = threading.Thread(target=request_location, args=(client,))
-    request_location_thread.start()
+        request_location_thread = threading.Thread(target=request_location, args=(client,))
+        request_location_thread.start()
 
 
 # Start the socket server communicating with phone on its own thread
