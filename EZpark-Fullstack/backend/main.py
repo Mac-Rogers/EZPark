@@ -4,16 +4,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from . import models, crud
 import requests
-
 import threading
 import socket
 import ast
 from .location import Location
 import time
-
+import cv2
 from geopy.geocoders import Nominatim
+from ultralytics import YOLO
+import numpy as np
 
 app = FastAPI()
+detection_threadhold = 0.75
 
 origins = [
     "http://localhost",
@@ -169,6 +171,91 @@ def start_server():
     request_location_thread = threading.Thread(target=request_location, args=(client,))
     request_location_thread.start()
 
+def apply_perspective_transform(input_image, scale):
+    height, width = input_image.shape[:2]
+
+    # Define the four points in the source image
+    pts_src = np.array([[0, 0], [width - 1, 0], [width - 1, height - 1], [0, height - 1]], dtype=np.float32)
+
+    # Define the four points in the destination image
+    pts_dst = np.array([
+        [0, 0],
+        [width - 1, 0],
+        [width - 1 - scale * 100, height - 1],
+        [scale * 100, height - 1]
+    ], dtype=np.float32)
+
+    # Calculate the perspective transform matrix
+    matrix = cv2.getPerspectiveTransform(pts_src, pts_dst)
+
+    # Apply the perspective transformation
+    result = cv2.warpPerspective(input_image, matrix, (width, height))
+
+    return result
+
+def apply_binary_threshold(image, threshold):
+    # Apply binary thresholding
+    _, black_and_white_image = cv2.threshold(image, threshold, 255, cv2.THRESH_BINARY)
+    return black_and_white_image
+
+def process_webcam_feed(scale=2.7, threshold=200):
+    # Load the YOLOv8 model
+    model = YOLO('backend/model_weights.pt')
+
+    # Capture video from the webcam
+    cap = cv2.VideoCapture(0)
+
+    if not cap.isOpened():
+        print("Error: Could not open webcam.")
+        return
+
+    while True:
+        # Read a frame from the webcam
+        ret, frame = cap.read()
+
+        if not ret:
+            print("Error: Could not read frame from webcam.")
+            break
+
+        # Convert to grayscale before applying threshold
+        gray_image = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+        # Apply binary thresholding
+        black_and_white_image = apply_binary_threshold(gray_image, threshold=threshold)
+
+        # Apply perspective transform
+        transformed_image = apply_perspective_transform(black_and_white_image, scale=scale)
+
+        # Convert the transformed image back to BGR
+        transformed_image_bgr = cv2.cvtColor(transformed_image, cv2.COLOR_GRAY2BGR)
+
+        # Run YOLOv8 inference on the transformed image
+        results = model(transformed_image_bgr)
+        #print("Results ",len(results[0].obb.conf.tolist()))
+        if len(results[0].obb.conf.tolist()):
+            if max(results[0].obb.conf.tolist()) > detection_threadhold:
+                print("Park Detected!")
+                
+
+        # Visualize the results on the transformed image
+        annotated_frame = results[0].plot()
+
+        # Display the original and processed frames
+        cv2.imshow('Original', frame)
+        cv2.imshow('Processed', annotated_frame)
+
+        # Break the loop on 'q' key press
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    # Release the webcam and close windows
+    cap.release()
+    cv2.destroyAllWindows()
+
+@app.post("/start-webcam")
+async def start_webcam():
+    threading.Thread(target=process_webcam_feed, daemon=True).start()
+    return {"message": "Webcam streaming started"}
 
 
 # Start the server
