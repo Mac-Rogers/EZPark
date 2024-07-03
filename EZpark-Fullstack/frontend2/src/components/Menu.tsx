@@ -38,6 +38,10 @@ const Icon: React.FC<IconProps> = ({ icon, className }) => {
     );
 }
 
+export default Menu;
+
+
+
 // interface Item {
 //     id: number;
 //     name: string;
@@ -86,4 +90,38 @@ const Icon: React.FC<IconProps> = ({ icon, className }) => {
 //     );
 // };
 
-export default Menu;
+
+
+// import React from "react"; 
+// import Logo from "../img/EZpark-logo-nobg.png";
+// import { AiFillSetting } from "react-icons/ai";
+// import SearchBar from "./SearchBar";
+
+// const Menu: React.FC = () => {
+//   return (
+//     <div className="menu">
+//       <img src={Logo} alt="EZpark Logo" />
+//       <div className="search">
+//         <SearchBar />
+//       </div>
+//       <div className="settings">
+//         <Icon icon={<AiFillSetting />} className="settings" />
+//       </div>
+//     </div>
+//   );
+// };
+
+// interface IconProps {
+//   icon: React.ReactNode;
+//   className?: string;
+// }
+
+// const Icon: React.FC<IconProps> = ({ icon, className }) => {
+//   return (
+//     <li className={className}>
+//       <a href="#">{icon}</a>
+//     </li>
+//   );
+// };
+
+// export default Menu;
