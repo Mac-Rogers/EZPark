@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import maplibregl from 'maplibre-gl';
+import MapLibreGlDirections, { LoadingIndicatorControl } from "@maplibre/maplibre-gl-directions";
 
 const MapComponent: React.FC = () => {
   const [coordinates, setCoordinates] = useState<[number, number] | null>(null);
   const [markerCoordinates, setMarkerCoordinates] = useState<[number, number][]>([]);
   const [map, setMap] = useState<maplibregl.Map | null>(null);
+  const [directions, setDirections] = useState<MapLibreGlDirections | null>(null);
+  const markersRef = useRef<maplibregl.Marker[]>([]);  // To keep track of the markers
 
   useEffect(() => {
     const fetchCoordinates = async () => {
@@ -18,6 +21,16 @@ const MapComponent: React.FC = () => {
         const db_coords = await db_response.json();
         const coords = db_coords.map((item: { latitude: number, longitude: number }) => [item.longitude, item.latitude]);
         setMarkerCoordinates(coords);
+        fetch('http://localhost:8000/set-coordinates', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            end: [0, 0],
+          }),
+        });
+        
       } catch (error) {
         console.error('Error fetching GPS coordinates:', error);
       }
@@ -26,6 +39,8 @@ const MapComponent: React.FC = () => {
     fetchCoordinates();
   }, []);
 
+  
+
   useEffect(() => {
     if (coordinates && !map) {
       const mapInstance = new maplibregl.Map({
@@ -33,6 +48,11 @@ const MapComponent: React.FC = () => {
         style: 'https://api.maptiler.com/maps/streets/style.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL',
         center: coordinates,
         zoom: 12,
+      });
+
+      mapInstance.on('load', () => {
+        const directionsInstance = new MapLibreGlDirections(mapInstance);
+        setDirections(directionsInstance);
       });
 
       setMap(mapInstance);
@@ -54,14 +74,54 @@ const MapComponent: React.FC = () => {
   }, [coordinates, map]);
 
   useEffect(() => {
-    if (map) {
-      markerCoordinates.forEach(coord => {
-        new maplibregl.Marker()
-          .setLngLat(coord)
-          .addTo(map);
-      });
-    }
-  }, [markerCoordinates, map]);
+    const intervalId = setInterval(() => {
+      const updateMap = async () => {
+        try {
+          const db_response = await fetch('http://localhost:8000/items');
+          const db_coords = await db_response.json();
+          const coords = db_coords.map((item: { latitude: number, longitude: number }) => [item.longitude, item.latitude]);
+
+          // Add new markers
+          const newMarkers = coords.map((coord: maplibregl.LngLatLike) => {
+            const marker = new maplibregl.Marker().setLngLat(coord).addTo(map!);
+            return marker;
+          });
+
+          // Remove old markers
+          markersRef.current.forEach(marker => marker.remove());
+          markersRef.current = newMarkers;
+
+          setMarkerCoordinates(coords);
+          console.log(markerCoordinates);
+
+          if (map) {
+            coords.map((coord: maplibregl.LngLatLike) => {
+              const marker = new maplibregl.Marker().setLngLat(coord).addTo(map);
+              markersRef.current.push(marker);
+              return marker;
+            });
+          }
+
+          const response = await fetch('http://localhost:8000/get-coordinates');
+          const data = await response.json();
+          if (directions && data.dest_coords[0]) {
+            console.log("desstcorrds: ", data.dest_coords)
+            directions.setWaypoints([
+              coordinates,
+              data.dest_coords,
+            ]);
+          }
+          //setCoordinates([data.longitude, data.latitude]);
+        } catch (error) {
+          console.error('Error updating map:', error);
+        }
+      };
+      updateMap();
+    }, 1000); // Poll every 3 seconds
+    return () => clearInterval(intervalId);
+  }, [map, coordinates, directions, markerCoordinates]);
+  
+
 
   return <div id="map" style={{ height: '100%', width: '100%' }}></div>;
 };

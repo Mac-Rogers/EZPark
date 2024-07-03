@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -35,12 +35,28 @@ class ItemCreate(BaseModel):
     latitude: float
     longitude: float
 
+class Coordinates(BaseModel):
+    end: list[float]
+
 def get_db():
     db = models.SessionLocal()
     try:
         yield db
     finally:
         db.close()
+
+dest_coords = [0, 0]
+
+@app.post("/set-coordinates")
+async def set_coordinates(end_coords: Coordinates):
+    global dest_coords
+    dest_coords = end_coords.end
+    return {"message": "Coordinates received"}
+
+@app.get("/get-coordinates")
+async def get_coordinates():
+    global dest_coords
+    return {"dest_coords": dest_coords}
 
 @app.on_event("startup")
 def startup_event():
