@@ -38,3 +38,6 @@ pip-log.txt
 # Ignore IDE/editor specific files
 .vscode/
 .idea/
+
+# Ignore the node modules
+node_modules/
