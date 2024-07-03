@@ -154,8 +154,6 @@ def start_server():
     request_location_thread.start()
 
 
-
-# Start the server
-# start_server() # Maybe put on a thread
-
+# Start the socket server communicating with phone on its own thread
+# threading.Thread(target=start_server).start()
 
