@@ -77,14 +77,20 @@ const MapComponent: React.FC = () => {
     const intervalId = setInterval(() => {
       const updateMap = async () => {
         try {
-          // Remove old markers
-          markersRef.current.forEach(marker => marker.remove());
-          markersRef.current = [];
-
-          //Repopulate markers
           const db_response = await fetch('http://localhost:8000/items');
           const db_coords = await db_response.json();
           const coords = db_coords.map((item: { latitude: number, longitude: number }) => [item.longitude, item.latitude]);
+
+          // Add new markers
+          const newMarkers = coords.map((coord: maplibregl.LngLatLike) => {
+            const marker = new maplibregl.Marker().setLngLat(coord).addTo(map!);
+            return marker;
+          });
+
+          // Remove old markers
+          markersRef.current.forEach(marker => marker.remove());
+          markersRef.current = newMarkers;
+
           setMarkerCoordinates(coords);
           console.log(markerCoordinates);
 
@@ -111,7 +117,7 @@ const MapComponent: React.FC = () => {
         }
       };
       updateMap();
-    }, 3000); // Poll every 3 seconds
+    }, 1000); // Poll every 3 seconds
     return () => clearInterval(intervalId);
   }, [map, coordinates, directions, markerCoordinates]);
   
