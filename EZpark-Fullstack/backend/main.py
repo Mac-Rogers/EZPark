@@ -48,6 +48,7 @@ def get_db():
         db.close()
 
 dest_coords = [0, 0]
+current_coords = [0,0]
 
 @app.post("/set-coordinates")
 async def set_coordinates(end_coords: Coordinates):
@@ -130,6 +131,7 @@ def request_location(client: socket.socket):
         client.send("Location Request".encode())
         packet = client.recv(2048)
         location_raw = packet.decode('ascii')
+        global current_coords
         if not location_raw:
             print("Phone disconnected")
             lock.clear()
@@ -144,13 +146,11 @@ def request_location(client: socket.socket):
                                        data.get('accuracy'),
                                        data.get('provider'))
             print(currentLocation)
-
-            # Send this currentLocation somewhere to backend?
+            current_coords = [currentLocation.latitude, currentLocation.longitude]
 
         else:
             print("No location data received")
         lock.clear()
-
 
 def start_server():
     s = socket.socket()
@@ -237,6 +237,10 @@ def process_webcam_feed(scale=2.7, threshold=200):
         #print("Results ",len(results[0].obb.conf.tolist()))
         if len(results[0].obb.conf.tolist()):
             if max(results[0].obb.conf.tolist()) > detection_threadhold:
+                trigger_request() #requests coordinates
+                time.sleep(0.1)
+                db = next(get_db())
+                crud.create_item(db, current_coords[0], current_coords[1])
                 print("Park Detected!")
                 
 
@@ -259,6 +263,11 @@ def process_webcam_feed(scale=2.7, threshold=200):
 async def start_webcam():
     threading.Thread(target=process_webcam_feed, daemon=True).start()
     return {"message": "Webcam streaming started"}
+
+@app.post("/start-gps")
+async def start_webcam():
+    threading.Thread(target=start_server).start()
+    return {"message": "GPS streaming started"}
 
 # Start the socket server communicating with phone on its own thread
 # threading.Thread(target=start_server).start()
