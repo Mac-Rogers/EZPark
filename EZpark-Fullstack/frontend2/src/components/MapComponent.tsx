@@ -105,8 +105,9 @@ const MapComponent: React.FC = () => {
 
             const response = await fetch('http://localhost:8000/get-coordinates');
             const data = await response.json();
-            if (directions && data.dest_coords[0]) {
+            if (directions && data.dest_coords[0] && coordinates) {
               //console.log("desstcorrds: ", data.dest_coords)
+
               directions.setWaypoints([
                 coordinates,
                 data.dest_coords,

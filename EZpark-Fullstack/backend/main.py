@@ -13,6 +13,7 @@ import cv2
 from geopy.geocoders import Nominatim
 from ultralytics import YOLO
 import numpy as np
+import math
 
 app = FastAPI()
 detection_threadhold = 0.75
@@ -89,7 +90,8 @@ async def get_gps_coordinates():
 async def convert_ip(request: LocationRequest):
     global dest_coords
     search_coords = get_coordinates(str(request.location))
-    dest_coords = [search_coords[1], search_coords[0]]
+    closest_coords = get_closest_coordinate(search_coords[0], search_coords[1], next(get_db()))
+    dest_coords = [closest_coords[1], closest_coords[0]]
     return {"Coordinates": search_coords}
 
 @app.post("/clear-db/")
@@ -291,7 +293,31 @@ def get_coordinates(place_name):
         return coordinates['lat'], coordinates['lng']
     else:
         raise Exception(f"Unable to find coordinates for {place_name}")
+    
+def haversine(lat1, lon1, lat2, lon2):
+    # Calculate the great circle distance between two points on the earth (specified in decimal degrees)
+    R = 6371  # Radius of the earth in kilometers. Use 3956 for miles.
+    
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    a = math.sin(dlat / 2) ** 2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon / 2) ** 2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    distance = R * c  # Distance in kilometers
+    return distance
 
+def get_closest_coordinate(target_lat, target_lon, db: Session):
+    coordinates = db.query(models.Coordinate).all()
+
+    closest_distance = float('inf')
+    closest_coordinate = None
+
+    for coord in coordinates:
+        distance = haversine(target_lat, target_lon, coord.latitude, coord.longitude)
+        if distance < closest_distance:
+            closest_distance = distance
+            closest_coordinate = (coord.latitude, coord.longitude)
+
+    return closest_coordinate
 
 #start_webcam()
 #start_gps()
