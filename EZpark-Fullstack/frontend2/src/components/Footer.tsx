@@ -89,7 +89,7 @@ const Footer: React.FC = () => {
   return (
     <div className="footer">
       <button className="find-park" onClick={handleClick}>Find Me A Park</button>
-      <div className="location">
+      <div className="location" onClick={handleIconClick}>
         <FaLocationArrow />
       </div>
     </div>
@@ -97,4 +97,3 @@ const Footer: React.FC = () => {
 };
 
 export default Footer;
-
