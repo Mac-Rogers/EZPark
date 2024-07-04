@@ -13,7 +13,7 @@ if image is not None:
     # Run YOLOv8 inference on the image
     results = model.predict(source=image_path)
 
-    print("Results:", results[0].obb)
+    print("Results:", results[0].obb.conf)
     for detection in results[0].obb.conf.tolist():
         if detection > threshold:
             print("Park detected!")
