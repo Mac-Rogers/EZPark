@@ -161,6 +161,7 @@ fabric.properties
 logs
 **/*.backup.*
 **/*.back.*
+*.db
 
 node_modules
 bower_components

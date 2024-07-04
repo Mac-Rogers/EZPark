@@ -19,6 +19,7 @@ checkerboard.jpg
 *.tmp
 *.bak
 *.swp
+*.db
 
 # Ignore other common directories and files
 .DS_Store
@@ -37,3 +38,6 @@ pip-log.txt
 # Ignore IDE/editor specific files
 .vscode/
 .idea/
+
+# Ignore the node modules
+node_modules/

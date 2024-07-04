@@ -74,12 +74,24 @@ def start_server():
     request_location_thread = threading.Thread(target=request_location, args=(client,))
     request_location_thread.start()
 
+def start_backend_comms():
+    backend_comms = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    backend_comms.bind(('localhost', 8765))
+    backend_comms.listen(5)
+    print("Server started on port 8765")
+
+    client_sock, addr = backend_comms.accept()
+    print(f"Accepted connection from {addr[0]} on port {addr[1]}")
+    while True:
+        msg = client_sock.recv(1024).decode()
+        if msg == "Request location":
+            trigger_request()
 
 def main():
     start_server()
+    start_backend_comms()
 
-    # Call the trigger request here to get a coordinate printed. Maybe set it up to listen for a trigger at a certain
-    # port number on localhost?
+
 
 if __name__ == "__main__":
     main()
