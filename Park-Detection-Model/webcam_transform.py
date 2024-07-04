@@ -31,7 +31,7 @@ def apply_binary_threshold(image, threshold=230):
 
 def process_webcam_feed(scale=1.0, threshold=230):
     # Load the YOLOv8 model
-    model = YOLO("model-training_0/weights/best.pt")
+    model = YOLO('model-training_0/weights/best.pt')
 
     # Capture video from the webcam
     cap = cv2.VideoCapture(0)
@@ -62,6 +62,7 @@ def process_webcam_feed(scale=1.0, threshold=230):
 
         # Run YOLOv8 inference on the transformed image
         results = model(transformed_image_bgr)
+        print("Results ",results[0].obb.conf.tolist())
 
         # Visualize the results on the transformed image
         annotated_frame = results[0].plot()
@@ -83,4 +84,4 @@ if __name__ == "__main__":
     scale_factor = 2.7
     threshold_value = 200
 
-    process_webcam_feed(scale=scale_factor, threshold=threshold_value)
+    process_webcam_feed(scale=2.7, threshold=200)

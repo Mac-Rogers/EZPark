@@ -16,7 +16,7 @@ const MapComponent: React.FC = () => {
         const response = await fetch('http://localhost:8000/gps-coordinates');
         const data = await response.json();
         setCoordinates([data.longitude, data.latitude]);
-        console.log([data.longitude, data.latitude])
+        //console.log([data.longitude, data.latitude])
         const db_response = await fetch('http://localhost:8000/items');
         const db_coords = await db_response.json();
         const coords = db_coords.map((item: { latitude: number, longitude: number }) => [item.longitude, item.latitude]);
@@ -104,7 +104,7 @@ const MapComponent: React.FC = () => {
           markersRef.current = newMarkers;
 
           setMarkerCoordinates(coords);
-          console.log(markerCoordinates);
+          //console.log(markerCoordinates);
 
           if (map) {
             coords.map((coord: maplibregl.LngLatLike) => {
@@ -117,7 +117,7 @@ const MapComponent: React.FC = () => {
           const response = await fetch('http://localhost:8000/get-coordinates');
           const data = await response.json();
           if (directions && data.dest_coords[0]) {
-            console.log("desstcorrds: ", data.dest_coords)
+            //console.log("desstcorrds: ", data.dest_coords)
             directions.setWaypoints([
               coordinates,
               data.dest_coords,
