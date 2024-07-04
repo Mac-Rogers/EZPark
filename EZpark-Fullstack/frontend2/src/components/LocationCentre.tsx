@@ -1,18 +1,13 @@
-import React from 'react';
-import { FaLocationArrow } from 'react-icons/fa';
+import React from "react";
+import { FaLocationArrow } from "react-icons/fa";
 
-const LocationButton: React.FC = () => {
-    const handleClick = () => {
-        console.log('Location icon clicked');
-    };
+const LocationCentre = () => {
 
     return (
-        <button onClick={handleClick} className="location-button">
-            <div className="location">
-                <FaLocationArrow />
-            </div>
-        </button>
+        <div className="Location">
+            <FaLocationArrow />
+        </div>
     );
 };
 
-export default LocationButton;
+export default LocationCentre;

@@ -298,4 +298,3 @@ def get_coordinates(place_name):
 
 # Start the socket server communicating with phone on its own thread
 # threading.Thread(target=start_server).start()
-
