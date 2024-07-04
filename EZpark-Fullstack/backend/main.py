@@ -259,15 +259,18 @@ def process_webcam_feed(scale=2.7, threshold=200):
     cap.release()
     cv2.destroyAllWindows()
 
-@app.post("/start-webcam")
-async def start_webcam():
+#@app.post("/start-webcam")
+def start_webcam():
     threading.Thread(target=process_webcam_feed, daemon=True).start()
     return {"message": "Webcam streaming started"}
 
-@app.post("/start-gps")
-async def start_webcam():
+#@app.post("/start-gps")
+def start_gps():
     threading.Thread(target=start_server).start()
     return {"message": "GPS streaming started"}
+
+start_webcam()
+start_gps()
 
 # Start the socket server communicating with phone on its own thread
 # threading.Thread(target=start_server).start()

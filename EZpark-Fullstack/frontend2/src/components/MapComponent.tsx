@@ -30,6 +30,18 @@ const MapComponent: React.FC = () => {
             end: [0, 0],
           }),
         });
+        // fetch('http://localhost:8000/start-gps', {
+        //   method: 'POST',
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //   },
+        // });
+        // fetch('http://localhost:8000/start-webcam', {
+        //   method: 'POST',
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //   },
+        // });
         
       } catch (error) {
         console.error('Error fetching GPS coordinates:', error);
