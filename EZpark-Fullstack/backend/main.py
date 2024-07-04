@@ -17,6 +17,7 @@ import math
 
 app = FastAPI()
 detection_threadhold = 0.75
+recentre_count = 0
 
 OPENCAGE_API_KEY = '02780a04cad143838610f6a470919f90'
 
@@ -84,7 +85,17 @@ def create_item(item: ItemCreate, db: Session = Depends(get_db)):
 @app.get("/gps-coordinates")
 async def get_gps_coordinates():
     longitude, latitude = get_current_location()
-    return {"longitude": latitude, "latitude": longitude}
+    return {"longitude": latitude, "latitude": longitude} 
+
+@app.get("/recentre_check")
+async def recentre_check():
+    return {"count": int(recentre_count)}
+
+@app.post("/recentre")
+async def recentre():
+    global recentre_count
+    recentre_count +=1
+    return {"Reponse": "Recentering"}
 
 @app.post("/convert-ip")
 async def convert_ip(request: LocationRequest):

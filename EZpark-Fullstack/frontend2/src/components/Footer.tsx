@@ -84,6 +84,13 @@ const Footer: React.FC = () => {
 
   const handleIconClick = () => {
     console.log('Location icon clicked');
+    fetch('http://localhost:8000/recentre', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+
   };
 
   return (
