@@ -30,18 +30,6 @@ const MapComponent: React.FC = () => {
             end: [0, 0],
           }),
         });
-        // fetch('http://localhost:8000/start-gps', {
-        //   method: 'POST',
-        //   headers: {
-        //     'Content-Type': 'application/json',
-        //   },
-        // });
-        // fetch('http://localhost:8000/start-webcam', {
-        //   method: 'POST',
-        //   headers: {
-        //     'Content-Type': 'application/json',
-        //   },
-        // });
         
       } catch (error) {
         console.error('Error fetching GPS coordinates:', error);
@@ -89,6 +77,7 @@ const MapComponent: React.FC = () => {
     const intervalId = setInterval(() => {
       const updateMap = async () => {
         try {
+          if (map) {
           const db_response = await fetch('http://localhost:8000/items');
           const db_coords = await db_response.json();
           const coords = db_coords.map((item: { latitude: number, longitude: number }) => [item.longitude, item.latitude]);
@@ -106,22 +95,23 @@ const MapComponent: React.FC = () => {
           setMarkerCoordinates(coords);
           //console.log(markerCoordinates);
 
-          if (map) {
+          
             coords.map((coord: maplibregl.LngLatLike) => {
               const marker = new maplibregl.Marker().setLngLat(coord).addTo(map);
               markersRef.current.push(marker);
               return marker;
             });
-          }
+          
 
-          const response = await fetch('http://localhost:8000/get-coordinates');
-          const data = await response.json();
-          if (directions && data.dest_coords[0]) {
-            //console.log("desstcorrds: ", data.dest_coords)
-            directions.setWaypoints([
-              coordinates,
-              data.dest_coords,
-            ]);
+            const response = await fetch('http://localhost:8000/get-coordinates');
+            const data = await response.json();
+            if (directions && data.dest_coords[0]) {
+              //console.log("desstcorrds: ", data.dest_coords)
+              directions.setWaypoints([
+                coordinates,
+                data.dest_coords,
+              ]);
+            }
           }
           //setCoordinates([data.longitude, data.latitude]);
         } catch (error) {

@@ -17,6 +17,8 @@ import numpy as np
 app = FastAPI()
 detection_threadhold = 0.75
 
+OPENCAGE_API_KEY = '02780a04cad143838610f6a470919f90'
+
 origins = [
     "http://localhost",
     "http://localhost:3000",
@@ -36,6 +38,9 @@ lock = threading.Event()
 class ItemCreate(BaseModel):
     latitude: float
     longitude: float
+
+class LocationRequest(BaseModel):
+    location: str
 
 class Coordinates(BaseModel):
     end: list[float]
@@ -79,6 +84,13 @@ def create_item(item: ItemCreate, db: Session = Depends(get_db)):
 async def get_gps_coordinates():
     longitude, latitude = get_current_location()
     return {"longitude": latitude, "latitude": longitude}
+
+@app.post("/convert-ip")
+async def convert_ip(request: LocationRequest):
+    global dest_coords
+    search_coords = get_coordinates(str(request.location))
+    dest_coords = [search_coords[1], search_coords[0]]
+    return {"Coordinates": search_coords}
 
 @app.post("/clear-db/")
 def clear_db(db: Session = Depends(get_db)):
@@ -163,7 +175,7 @@ def start_server():
             s.bind((host, port))
             break
         except OSError:
-            print(f"Unable to start server at {host} on port {port}. Consider using same network as phone.")
+            #print(f"Unable to start server at {host} on port {port}. Consider using same network as phone.")
             time.sleep(10)
     print(f"Started server at {host} on port {port}")
     while True:
@@ -269,8 +281,20 @@ def start_gps():
     threading.Thread(target=start_server).start()
     return {"message": "GPS streaming started"}
 
-start_webcam()
-start_gps()
+def get_coordinates(place_name):
+    url = f'https://api.opencagedata.com/geocode/v1/json?q={place_name}&key={OPENCAGE_API_KEY}'
+    response = requests.get(url)
+    data = response.json()
+    
+    if data['results']:
+        coordinates = data['results'][0]['geometry']
+        return coordinates['lat'], coordinates['lng']
+    else:
+        raise Exception(f"Unable to find coordinates for {place_name}")
+
+
+#start_webcam()
+#start_gps()
 
 # Start the socket server communicating with phone on its own thread
 # threading.Thread(target=start_server).start()
