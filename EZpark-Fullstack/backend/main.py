@@ -233,7 +233,7 @@ def process_webcam_feed(scale=2.7, threshold=200):
         transformed_image_bgr = cv2.cvtColor(transformed_image, cv2.COLOR_GRAY2BGR)
 
         # Run YOLOv8 inference on the transformed image
-        results = model(transformed_image_bgr)
+        results = model(transformed_image_bgr, verbose=False)
         #print("Results ",len(results[0].obb.conf.tolist()))
         if len(results[0].obb.conf.tolist()):
             if max(results[0].obb.conf.tolist()) > detection_threadhold:

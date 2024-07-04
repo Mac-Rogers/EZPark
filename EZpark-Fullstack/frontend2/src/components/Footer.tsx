@@ -82,6 +82,10 @@ const Footer: React.FC = () => {
     return closestCoordinate;
   };
 
+  const handleIconClick = () => {
+    console.log('Location icon clicked');
+  };
+
   return (
     <div className="footer">
       <button className="find-park" onClick={handleClick}>Find Me A Park</button>
@@ -93,3 +97,4 @@ const Footer: React.FC = () => {
 };
 
 export default Footer;
+
