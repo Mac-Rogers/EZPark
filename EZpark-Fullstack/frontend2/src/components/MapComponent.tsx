@@ -46,7 +46,7 @@ const MapComponent: React.FC = () => {
     if (coordinates && !map) {
       const mapInstance = new maplibregl.Map({
         container: 'map',
-        style: 'https://api.maptiler.com/maps/streets/style.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL',
+        style: 'https://api.maptiler.com/maps/topo-v2/style.json?key=Uk5cqVzSJr8nvCaOsQRk',
         center: coordinates,
         zoom: 12,
       });
