@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import maplibregl from 'maplibre-gl';
 import MapLibreGlDirections, { LoadingIndicatorControl } from "@maplibre/maplibre-gl-directions";
+import maplibregl, { LngLat } from 'maplibre-gl';
 
 const MapComponent: React.FC = () => {
   const [coordinates, setCoordinates] = useState<[number, number] | null>(null);
@@ -9,6 +9,7 @@ const MapComponent: React.FC = () => {
   const [map, setMap] = useState<maplibregl.Map | null>(null);
   const [directions, setDirections] = useState<MapLibreGlDirections | null>(null);
   const markersRef = useRef<maplibregl.Marker[]>([]);  // To keep track of the markers
+  const [localRecentreCount, setLocalRecentreCount] = useState(0);
 
   useEffect(() => {
     const fetchCoordinates = async () => {
@@ -77,7 +78,17 @@ const MapComponent: React.FC = () => {
     const intervalId = setInterval(() => {
       const updateMap = async () => {
         try {
-          if (map) {
+          if (map && coordinates) {
+          const local_recentre = await fetch('http://localhost:8000/recentre_check');
+          const recentre_count = await local_recentre.json();
+          //console.log("local:", localRecentreCount, "remote:", recentre_count.count)
+          if (localRecentreCount < recentre_count.count) {
+            setLocalRecentreCount(prevCount => prevCount + 1);
+            map.flyTo({
+              center: new maplibregl.LngLat(coordinates[0], coordinates[1])
+            });
+          }
+
           const db_response = await fetch('http://localhost:8000/items');
           const db_coords = await db_response.json();
           const coords = db_coords.map((item: { latitude: number, longitude: number }) => [item.longitude, item.latitude]);
@@ -105,8 +116,9 @@ const MapComponent: React.FC = () => {
 
             const response = await fetch('http://localhost:8000/get-coordinates');
             const data = await response.json();
-            if (directions && data.dest_coords[0]) {
+            if (directions && data.dest_coords[0] && coordinates) {
               //console.log("desstcorrds: ", data.dest_coords)
+
               directions.setWaypoints([
                 coordinates,
                 data.dest_coords,
@@ -119,9 +131,9 @@ const MapComponent: React.FC = () => {
         }
       };
       updateMap();
-    }, 1000); // Poll every 3 seconds
+    }, 500); // Poll every 3 seconds
     return () => clearInterval(intervalId);
-  }, [map, coordinates, directions, markerCoordinates]);
+  }, [map, coordinates, directions, markerCoordinates, localRecentreCount]);
   
 
 
