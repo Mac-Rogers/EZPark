@@ -54,6 +54,22 @@ const MapComponent: React.FC = () => {
       mapInstance.on('load', () => {
         const directionsInstance = new MapLibreGlDirections(mapInstance);
         setDirections(directionsInstance);
+
+        const allLayers = mapInstance.getStyle().layers;
+
+
+         // Set the color of various layers to yellow
+        mapInstance.setPaintProperty('maplibre-gl-directions-routeline', 'line-color', '#0078D4');
+        mapInstance.setPaintProperty('maplibre-gl-directions-routeline-casing', 'line-color', '#0078D4');
+        mapInstance.setPaintProperty('maplibre-gl-directions-waypoint', 'circle-color', '#0078D4'); // Use icon-color for symbols
+        mapInstance.setPaintProperty('maplibre-gl-directions-waypoint-casing', 'circle-color', '#0078D4');
+        mapInstance.setPaintProperty('maplibre-gl-directions-snappoint', 'circle-color', '#0078D4'); // Use icon-color for symbols
+        mapInstance.setPaintProperty('maplibre-gl-directions-snappoint-casing', 'circle-color', '#0078D4');
+        mapInstance.setPaintProperty('maplibre-gl-directions-hoverpoint', 'icon-color', '#0078D4'); // Use icon-color for symbols
+        mapInstance.setPaintProperty('maplibre-gl-directions-hoverpoint-casing', 'line-color', '#0078D4');
+        mapInstance.setPaintProperty('maplibre-gl-directions-alt-routeline', 'line-color', '#0078D4');
+        mapInstance.setPaintProperty('maplibre-gl-directions-alt-routeline-casing', 'line-color', '#0078D4');
+        mapInstance.setPaintProperty('maplibre-gl-directions-snapline', 'line-color', '#0078D4');
       });
 
       setMap(mapInstance);
