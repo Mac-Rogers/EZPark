@@ -17,6 +17,7 @@ import math
 
 app = FastAPI()
 detection_threadhold = 0.75
+repetition_threshold = 5
 recentre_count = 0
 
 OPENCAGE_API_KEY = '02780a04cad143838610f6a470919f90'
@@ -229,6 +230,7 @@ def apply_binary_threshold(image, threshold):
 def process_webcam_feed(scale=2.7, threshold=200):
     # Load the YOLOv8 model
     model = YOLO('backend/model_weights.pt')
+    rep_threshold = 0
 
     # Capture video from the webcam
     cap = cv2.VideoCapture(0)
@@ -261,12 +263,16 @@ def process_webcam_feed(scale=2.7, threshold=200):
         results = model(transformed_image_bgr, verbose=False)
         #print("Results ",len(results[0].obb.conf.tolist()))
         if len(results[0].obb.conf.tolist()):
-            if max(results[0].obb.conf.tolist()) > detection_threadhold:
-                trigger_request() #requests coordinates
-                time.sleep(0.1)
-                db = next(get_db())
-                crud.create_item(db, current_coords[0], current_coords[1])
-                print("Park Detected!")
+            if (max(results[0].obb.conf.tolist()) > detection_threadhold):
+                if rep_threshold > repetition_threshold:
+                    rep_threshold = 0
+                    trigger_request() #requests coordinates
+                    time.sleep(0.1)
+                    db = next(get_db())
+                    crud.create_item(db, current_coords[0], current_coords[1])
+                    print("Park Detected!")
+                else:
+                    rep_threshold += 1
                 
 
         # Visualize the results on the transformed image
