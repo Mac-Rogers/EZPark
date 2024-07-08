@@ -180,7 +180,7 @@ def request_location(client: socket.socket):
 def start_server():
     s = socket.socket()
     # Change this IP if needed
-    host = '192.168.185.84'
+    host = '192.168.83.84'
     port = 12345
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     while True:
@@ -188,7 +188,7 @@ def start_server():
             s.bind((host, port))
             break
         except OSError:
-            #print(f"Unable to start server at {host} on port {port}. Consider using same network as phone.")
+            print(f"Unable to start server at {host} on port {port}. Consider using same network as phone.")
             time.sleep(10)
     print(f"Started server at {host} on port {port}")
     while True:
@@ -283,11 +283,19 @@ def process_webcam_feed(scale=2.7, threshold=200):
     # Release the webcam and close windows
     cap.release()
     cv2.destroyAllWindows()
+#
+#  # TESTING ONLY
+# def test():
+#     while True:
+#         time.sleep(3)
+#         trigger_request()
 
 #@app.post("/start-webcam")
 def start_webcam():
     threading.Thread(target=process_webcam_feed, daemon=True).start()
+    # threading.Thread(target=test).start()
     return {"message": "Webcam streaming started"}
+
 
 #@app.post("/start-gps")
 def start_gps():
@@ -330,8 +338,5 @@ def get_closest_coordinate(target_lat, target_lon, db: Session):
 
     return closest_coordinate
 
-#start_webcam()
-#start_gps()
-
-# Start the socket server communicating with phone on its own thread
-# threading.Thread(target=start_server).start()
+start_webcam()
+start_gps()
