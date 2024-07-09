@@ -344,5 +344,5 @@ def get_closest_coordinate(target_lat, target_lon, db: Session):
 
     return closest_coordinate
 
-start_webcam()
-start_gps()
+#start_webcam()
+#start_gps()

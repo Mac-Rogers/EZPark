@@ -147,7 +147,7 @@ const MapComponent: React.FC = () => {
         }
       };
       updateMap();
-    }, 500); // Poll every 3 seconds
+    }, 500); // Poll every 0.5 seconds
     return () => clearInterval(intervalId);
   }, [map, coordinates, directions, markerCoordinates, localRecentreCount]);
   
